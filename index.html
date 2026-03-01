@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveInvader Helper</title>
     <style>
-        
+        /* General Styles - GTA 5 RP Inspiriert */
         * {
             margin: 0;
             padding: 0;
@@ -44,7 +44,7 @@
             background: #4a505e;
         }
 
-        
+        /* Loading Animation */
         .loading {
             position: fixed;
             top: 0;
@@ -73,7 +73,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        
+        /* Popup Styles - Modern & Clean */
         .popup {
             position: fixed;
             top: 50%;
@@ -127,7 +127,7 @@
             background: #4a505e;
         }
 
-        
+        /* Header - Clean & Modern */
         .header {
             background: #1a1e24;
             padding: 25px 20px;
@@ -149,7 +149,7 @@
             font-weight: 300;
         }
 
-        
+        /* Container - GTA Card Style */
         .container {
             max-width: 900px;
             margin: 20px auto 40px;
@@ -167,7 +167,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        
+        /* Toggle Buttons - Clean Segmented Control */
         .toggle-container {
             display: flex;
             justify-content: center;
@@ -204,7 +204,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        
+        /* Textarea and Input Fields */
         textarea, input[type="text"] {
             width: 100%;
             padding: 15px;
@@ -242,7 +242,7 @@
             display: block;
         }
 
-        
+        /* Main Action Button */
         .format-btn {
             width: 100%;
             padding: 16px;
@@ -264,7 +264,7 @@
             background: #3a3f4b;
         }
 
-        
+        /* Suggestions Dropdown */
         .suggestions {
             position: absolute;
             background: #1e232b;
@@ -309,7 +309,7 @@
             border-radius: 3px;
         }
 
-        
+        /* Output Container */
         .output-container {
             position: relative;
             margin-top: 10px;
@@ -317,7 +317,8 @@
 
         .output-container textarea {
             margin-bottom: 10px;
-            padding-bottom: 50px;
+            font-family: 'Segoe UI', monospace;
+            line-height: 1.6;
         }
 
         .copy-button {
@@ -350,7 +351,7 @@
             letter-spacing: 1px;
         }
 
-        
+        /* LiveInvader Badge */
         .badge {
             margin-top: 20px;
             color: #5a5f69;
@@ -361,6 +362,23 @@
 
         .badge span {
             color: #6a6f7a;
+        }
+
+        
+        .example {
+            text-align: left;
+            margin-top: 15px;
+            padding: 10px;
+            background: #151a21;
+            border-radius: 4px;
+            border-left: 3px solid #4a505e;
+            font-size: 13px;
+            color: #8a8f99;
+        }
+
+        .example span {
+            color: #e0e0e0;
+            font-family: monospace;
         }
 
         
@@ -380,23 +398,23 @@
     </style>
 </head>
 <body>
-    
+    <!-- Loading Animation -->
     <div class="loading" id="loading">
         <div class="loading-spinner"></div>
     </div>
 
-    
+    <!-- Popup -->
     <div class="popup" id="popup">
         <p id="popup-message"></p>
         <button onclick="closePopup()">OK</button>
     </div>
 
-    
+    <!-- Header -->
     <div class="header">
         <h1>LIVEINVADER <span>Helper</span></h1>
     </div>
 
-    
+    <!-- Main Container -->
     <div class="container">
         <div class="toggle-container">
             <button class="toggle-btn active" id="toggleSuche" onclick="setMode('Suche')">SUCHE</button>
@@ -419,8 +437,15 @@
             <button class="copy-button" onclick="copyOutput()">KOPIEREN</button>
         </div>
         
+        <div class="example">
+            ⚡ Beispiele:<br>
+            <span id="exampleKaufe">Kaufe: Cheburek. Budget: $77.000.</span><br>
+            <span id="exampleVerkaufe">Verkaufe: Cheburek. Preis: $77.000.</span><br>
+            <span id="exampleSuche">Suche: Peter Byte. Bitte melde dich.</span>
+        </div>
+        
         <div class="badge">
-            <span>⚡</span> Liveinvader-Helper <span>⚡</span>
+            <span>⚡</span> Liveinvader Helper <span>⚡</span>
         </div>
     </div>
 
@@ -506,35 +531,42 @@
             } else {
                 priceInput.classList.remove("visible");
             }
+            
+            // Clear suggestions when switching to Suche mode
+            if (selectedMode === 'Suche') {
+                document.getElementById('suggestions').innerHTML = '';
+            }
         }
 
         function formatPrice(price) {
             if (!price) return '';
             
-            price = price.replace(/[^0-9.,km]/gi, '');
+            // Clean up the price input
+            let cleanPrice = price.replace(/[^0-9.,km]/gi, '');
             
             let numericValue = 0;
             
-            if (price.toLowerCase().includes('mio')) {
-                numericValue = parseFloat(price.replace(/mio/gi, '').replace(',', '.')) * 1000000;
-            } else if (price.toLowerCase().includes('kk')) {
-                numericValue = parseFloat(price.replace(/kk/gi, '').replace(',', '.')) * 1000000;
-            } else if (price.toLowerCase().includes('k')) {
-                numericValue = parseFloat(price.replace(/k/gi, '').replace(',', '.')) * 1000;
+            // Handle different formats (k, mio, kk)
+            if (cleanPrice.toLowerCase().includes('mio')) {
+                numericValue = parseFloat(cleanPrice.replace(/mio/gi, '').replace(',', '.')) * 1000000;
+            } else if (cleanPrice.toLowerCase().includes('kk')) {
+                numericValue = parseFloat(cleanPrice.replace(/kk/gi, '').replace(',', '.')) * 1000000;
+            } else if (cleanPrice.toLowerCase().includes('k')) {
+                numericValue = parseFloat(cleanPrice.replace(/k/gi, '').replace(',', '.')) * 1000;
             } else {
-                numericValue = parseFloat(price.replace(/\./g, '').replace(',', '.'));
+                // Remove dots and convert comma to dot for decimal
+                numericValue = parseFloat(cleanPrice.replace(/\./g, '').replace(',', '.'));
             }
             
             if (isNaN(numericValue) || numericValue <= 0) {
                 return 'VHB';
             }
             
-            return numericValue.toLocaleString('de-DE', { 
-                style: 'currency', 
-                currency: 'EUR',
+            // Format with dots as thousand separators and no decimal places
+            return numericValue.toLocaleString('de-DE', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).replace('€', '$') + ',-';
+            }).replace(/\./g, '.');
         }
 
         function correctVehicleName(text) {
@@ -564,13 +596,23 @@
                 inputElement.setSelectionRange(currentPos, currentPos);
             }
             
-            showSuggestions();
+            // Nur Vorschläge anzeigen wenn nicht im Suche Modus
+            if (mode !== 'Suche') {
+                showSuggestions();
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
         }
 
         function showSuggestions() {
             const input = document.getElementById("inputText").value;
             const suggestionsDiv = document.getElementById("suggestions");
             suggestionsDiv.innerHTML = "";
+
+            // Keine Vorschläge im Suche Modus
+            if (mode === 'Suche') {
+                return;
+            }
 
             if (input.length > 1) {
                 const filteredSuggestions = vehicleList.filter(vehicle => 
@@ -622,32 +664,30 @@
             let vehicle = correctVehicleName(text);
             
             if (vehicle === '') {
-                showPopup("...");
+                showPopup("Bitte Etwas Eingeben!");
                 return;
             }
             
             let output = "";
 
             if (mode === 'Verkaufe') {
-                output = `VERKAUFE: ${vehicle}`;
+                output = `Verkaufe: ${vehicle}.`;
                 if (price) {
-                    output += ` | PREIS: ${formatPrice(price)}`;
+                    output += ` Preis: $${formatPrice(price)}.`;
                 } else {
-                    output += ` | PREIS: VHB`;
+                    output += ` Preis: VHB.`;
                 }
-                output += ` | PN bei Interesse`;
             } 
             else if (mode === 'Kaufe') {
-                output = `KAUFE: ${vehicle}`;
+                output = `Kaufe: ${vehicle}.`;
                 if (price) {
-                    output += ` | BUDGET: ${formatPrice(price)}`;
+                    output += ` Budget: $${formatPrice(price)}.`;
                 } else {
-                    output += ` | BUDGET: VHB`;
+                    output += ` Budget: VHB.`;
                 }
-                output += ` | PN`;
             } 
             else {
-                output = `SUCHE: ${vehicle} | PN`;
+                output = `Suche: ${vehicle}. Bitte melde dich.`;
             }
 
             document.getElementById("outputText").value = output;

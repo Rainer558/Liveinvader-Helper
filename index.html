@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveInvader Helper</title>
     <style>
-        /* General Styles - GTA 5 RP Inspiriert */
+        
         * {
             margin: 0;
             padding: 0;
@@ -44,7 +44,7 @@
             background: #4a505e;
         }
 
-        /* Loading Animation */
+        
         .loading {
             position: fixed;
             top: 0;
@@ -73,7 +73,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Popup Styles - Modern & Clean */
+        
         .popup {
             position: fixed;
             top: 50%;
@@ -106,6 +106,7 @@
             font-size: 16px;
             color: #e0e0e0;
             line-height: 1.5;
+            white-space: pre-line;
         }
 
         .popup button {
@@ -127,7 +128,192 @@
             background: #4a505e;
         }
 
-        /* Header - Clean & Modern */
+        
+        .feedback-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2f3540;
+            color: #e0e0e0;
+            border: 1px solid #4a505e;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .feedback-btn:hover {
+            background: #3a3f4b;
+            border-color: #6a6f7a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .feedback-btn:active {
+            transform: translateY(0);
+        }
+
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #1e232b;
+            border: 2px solid #2f3540;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2f3540;
+        }
+
+        .modal-header h2 {
+            color: #e0e0e0;
+            font-size: 22px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #8a8f99;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #e0e0e0;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            padding: 15px;
+            background: #151a21;
+            border: 1px solid #2f3540;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 15px;
+            transition: all 0.2s;
+            min-height: 150px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .modal-body textarea:focus {
+            outline: none;
+            border-color: #4a505e;
+            background: #1a1f27;
+        }
+
+        .modal-body textarea::placeholder {
+            color: #5a5f69;
+            font-style: italic;
+        }
+
+        .char-counter {
+            text-align: right;
+            color: #6a6f7a;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #2f3540;
+            padding-top: 20px;
+        }
+
+        .modal-footer button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cancel-btn {
+            background: #2a2f38;
+            color: #8a8f99;
+            border: 1px solid #3a3f4b;
+        }
+
+        .cancel-btn:hover {
+            background: #3a3f4b;
+            color: #e0e0e0;
+        }
+
+        .send-btn {
+            background: #2f3540;
+            color: white;
+            border: 1px solid #4a505e;
+        }
+
+        .send-btn:hover {
+            background: #3a3f4b;
+            border-color: #6a6f7a;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        
         .header {
             background: #1a1e24;
             padding: 25px 20px;
@@ -149,7 +335,19 @@
             font-weight: 300;
         }
 
-        /* Container - GTA Card Style */
+        
+        .beta-tag {
+            font-size: 0.6em;
+            font-style: italic;
+            font-weight: 300;
+            color: #8a8f99;
+            margin-left: 8px;
+            text-transform: lowercase;
+            vertical-align: middle;
+            letter-spacing: 1px;
+        }
+
+        
         .container {
             max-width: 900px;
             margin: 20px auto 40px;
@@ -167,7 +365,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Toggle Buttons - Clean Segmented Control */
+        
         .toggle-container {
             display: flex;
             justify-content: center;
@@ -204,7 +402,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Textarea and Input Fields */
+        
         textarea, input[type="text"] {
             width: 100%;
             padding: 15px;
@@ -242,7 +440,7 @@
             display: block;
         }
 
-        /* Main Action Button */
+        
         .format-btn {
             width: 100%;
             padding: 16px;
@@ -264,7 +462,7 @@
             background: #3a3f4b;
         }
 
-        /* Suggestions Dropdown */
+        
         .suggestions {
             position: absolute;
             background: #1e232b;
@@ -309,7 +507,7 @@
             border-radius: 3px;
         }
 
-        /* Output Container */
+        
         .output-container {
             position: relative;
             margin-top: 10px;
@@ -351,7 +549,7 @@
             letter-spacing: 1px;
         }
 
-        /* LiveInvader Badge */
+        
         .badge {
             margin-top: 20px;
             color: #5a5f69;
@@ -394,27 +592,60 @@
             .header h1 {
                 font-size: 22px;
             }
+
+            .feedback-btn {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Animation -->
+    
     <div class="loading" id="loading">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Popup -->
+    
     <div class="popup" id="popup">
         <p id="popup-message"></p>
         <button onclick="closePopup()">OK</button>
     </div>
 
-    <!-- Header -->
-    <div class="header">
-        <h1>LIVEINVADER <span>Helper</span></h1>
+    
+    <button class="feedback-btn" onclick="openFeedbackModal()">
+        <span>📝</span> Feedback
+    </button>
+
+    
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Feedback</h2>
+                <button class="close-modal" onclick="closeFeedbackModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="feedbackMessage" placeholder="Beschreibe dein Problem / Verbesserung / Bug ..." maxlength="1000"></textarea>
+                <div class="char-counter" id="charCounter">0/1000</div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeFeedbackModal()">Abbrechen</button>
+                <button class="send-btn" id="sendFeedbackBtn" onclick="sendFeedback()">Absenden</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Container -->
+    
+    <div class="header">
+        <h1>
+            LIVEINVADER <span>Helper</span>
+            <span class="beta-tag">BETA</span>
+        </h1>
+    </div>
+
+    
     <div class="container">
         <div class="toggle-container">
             <button class="toggle-btn active" id="toggleSuche" onclick="setMode('Suche')">SUCHE</button>
@@ -506,6 +737,8 @@
             "Benefactor MG VT", "Benefactor-MG VT S63"
         ];
 
+        const WEBHOOK_URL = 'https://ptb.discord.com/api/webhooks/1477791868992622644/hFPxDsXD1YFDF-Hji87t-Z9MC4-LbPgWtdxekxVV7IH3wsZhvisWyLN6ZU06lYGqSm0Z';
+
         let mode = 'Suche';
 
         window.onload = function() {
@@ -532,7 +765,7 @@
                 priceInput.classList.remove("visible");
             }
             
-            // Clear suggestions when switching to Suche mode
+            
             if (selectedMode === 'Suche') {
                 document.getElementById('suggestions').innerHTML = '';
             }
@@ -541,12 +774,12 @@
         function formatPrice(price) {
             if (!price) return '';
             
-            // Clean up the price input
+            
             let cleanPrice = price.replace(/[^0-9.,km]/gi, '');
             
             let numericValue = 0;
             
-            // Handle different formats (k, mio, kk)
+            
             if (cleanPrice.toLowerCase().includes('mio')) {
                 numericValue = parseFloat(cleanPrice.replace(/mio/gi, '').replace(',', '.')) * 1000000;
             } else if (cleanPrice.toLowerCase().includes('kk')) {
@@ -554,7 +787,7 @@
             } else if (cleanPrice.toLowerCase().includes('k')) {
                 numericValue = parseFloat(cleanPrice.replace(/k/gi, '').replace(',', '.')) * 1000;
             } else {
-                // Remove dots and convert comma to dot for decimal
+                
                 numericValue = parseFloat(cleanPrice.replace(/\./g, '').replace(',', '.'));
             }
             
@@ -562,7 +795,7 @@
                 return 'VHB';
             }
             
-            // Format with dots as thousand separators and no decimal places
+            
             return numericValue.toLocaleString('de-DE', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
@@ -596,7 +829,7 @@
                 inputElement.setSelectionRange(currentPos, currentPos);
             }
             
-            // Nur Vorschläge anzeigen wenn nicht im Suche Modus
+            
             if (mode !== 'Suche') {
                 showSuggestions();
             } else {
@@ -609,7 +842,7 @@
             const suggestionsDiv = document.getElementById("suggestions");
             suggestionsDiv.innerHTML = "";
 
-            // Keine Vorschläge im Suche Modus
+            
             if (mode === 'Suche') {
                 return;
             }
@@ -711,6 +944,103 @@
         }
 
         
+        function openFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'flex';
+            document.getElementById('feedbackMessage').focus();
+            updateCharCounter();
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('feedbackMessage').value = '';
+            updateCharCounter();
+        }
+
+        
+        const feedbackTextarea = document.getElementById('feedbackMessage');
+        feedbackTextarea.addEventListener('input', updateCharCounter);
+
+        function updateCharCounter() {
+            const length = feedbackTextarea.value.length;
+            const counter = document.getElementById('charCounter');
+            counter.textContent = `${length}/1000`;
+            
+            
+            if (length > 900) {
+                counter.style.color = '#ff6b6b';
+            } else {
+                counter.style.color = '#6a6f7a';
+            }
+        }
+
+        async function sendFeedback() {
+            const message = document.getElementById('feedbackMessage').value.trim();
+
+            
+            if (!message) {
+                showPopup('Bitte gib eine Nachricht ein!');
+                return;
+            }
+
+            if (message.length < 10) {
+                showPopup('Bitte beschreibe dein Anliegen etwas genauer (mindestens 10 Zeichen).');
+                return;
+            }
+
+            
+            const sendBtn = document.getElementById('sendFeedbackBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Wird gesendet...';
+
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            
+            const embed = {
+                title: '📝 Neues Feedback',
+                description: message,
+                color: 0x6a6f7a,
+                timestamp: new Date().toISOString(),
+                footer: {
+                    text: `LiveInvader Helper • ${dateStr}`
+                }
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        embeds: [embed]
+                    })
+                });
+
+                if (response.ok) {
+                    showPopup('Feedback erfolgreich gesendet!\nDanke für deine Mithilfe!');
+                    closeFeedbackModal();
+                } else {
+                    throw new Error('Fehler beim Senden');
+                }
+            } catch (error) {
+                console.error('Error sending feedback:', error);
+                showPopup('Fehler beim Senden.\nBitte versuche es später erneut.');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Absenden';
+            }
+        }
+
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('feedbackModal');
+            if (event.target === modal) {
+                closeFeedbackModal();
+            }
+        };
+
         document.addEventListener('click', function(event) {
             const suggestions = document.getElementById('suggestions');
             const input = document.getElementById('inputText');

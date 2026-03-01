@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveInvader Helper</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #1a1e24;
+            background-image: linear-gradient(135deg, #1e232b 0%, #0f1217 100%);
+            text-align: center;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3a3f4b #1a1e24;
+        }
+
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #1a1e24;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: #3a3f4b;
+            border-radius: 4px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: #4a505e;
+        }
+
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f1217;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #2a2f38;
+            border-top: 4px solid #6a6f7a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #252a33;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            border: 1px solid #3a3f4b;
+            min-width: 300px;
+            animation: fadeIn 0.2s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -48%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, -50%); }
+            to { opacity: 0; transform: translate(-50%, -52%); }
+        }
+
+        .popup p {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+
+        .popup button {
+            padding: 10px 30px;
+            border: none;
+            background: #3a3f4b;
+            color: white;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #4a505e;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .popup button:hover {
+            background: #4a505e;
+        }
+
+        
+        .header {
+            background: #1a1e24;
+            padding: 25px 20px;
+            border-bottom: 2px solid #2f3540;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin: 0;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #e0e0e0;
+            letter-spacing: 3px;
+        }
+
+        .header h1 span {
+            color: #6a6f7a;
+            font-weight: 300;
+        }
+
+        
+        .container {
+            max-width: 900px;
+            margin: 20px auto 40px;
+            background: #1e232b;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2f3540;
+            width: 95%;
+            animation: fadeInContent 0.4s ease-out;
+        }
+
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 30px;
+            background: #151a21;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #2f3540;
+        }
+
+        .toggle-btn {
+            padding: 12px 25px;
+            border: none;
+            background: transparent;
+            color: #8a8f99;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+        }
+
+        .toggle-btn.active {
+            background: #2f3540;
+            color: #ffffff;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #2f3540;
+            background: #151a21;
+            color: #e0e0e0;
+            font-size: 15px;
+            transition: all 0.2s;
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #4a505e;
+            background: #1a1f27;
+        }
+
+        textarea[readonly] {
+            background: #151a21;
+            border-color: #2a2f38;
+            color: #8a8f99;
+        }
+
+        input[type="text"] {
+            display: none;
+        }
+
+        input[type="text"].visible {
+            display: block;
+        }
+
+        
+        .format-btn {
+            width: 100%;
+            padding: 16px;
+            background: #2f3540;
+            color: white;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            border: 1px solid #3a3f4b;
+        }
+
+        .format-btn:hover {
+            background: #3a3f4b;
+        }
+
+        
+        .suggestions {
+            position: absolute;
+            background: #1e232b;
+            border-radius: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            width: calc(100% - 70px);
+            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2f3540;
+            margin-top: -15px;
+            left: 35px;
+        }
+
+        .suggestions div {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #e0e0e0;
+            transition: all 0.2s;
+            border-bottom: 1px solid #2a2f38;
+            text-align: left;
+        }
+
+        .suggestions div:hover {
+            background: #2f3540;
+        }
+
+        .suggestions div:last-child {
+            border-bottom: none;
+        }
+
+        .suggestions::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .suggestions::-webkit-scrollbar-track {
+            background: #1a1e24;
+        }
+
+        .suggestions::-webkit-scrollbar-thumb {
+            background: #3a3f4b;
+            border-radius: 3px;
+        }
+
+        
+        .output-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .output-container textarea {
+            margin-bottom: 10px;
+            padding-bottom: 50px;
+        }
+
+        .copy-button {
+            position: absolute;
+            right: 15px;
+            bottom: 25px;
+            padding: 8px 20px;
+            background: #2f3540;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #3a3f4b;
+        }
+
+        .copy-button:hover {
+            background: #3a3f4b;
+        }
+
+        h3 {
+            color: #8a8f99;
+            margin: 20px 0 10px 0;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        
+        .badge {
+            margin-top: 20px;
+            color: #5a5f69;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .badge span {
+            color: #6a6f7a;
+        }
+
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .toggle-container {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    
+    <div class="popup" id="popup">
+        <p id="popup-message"></p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+
+    
+    <div class="header">
+        <h1>LIVEINVADER <span>Helper</span></h1>
+    </div>
+
+    
+    <div class="container">
+        <div class="toggle-container">
+            <button class="toggle-btn active" id="toggleSuche" onclick="setMode('Suche')">SUCHE</button>
+            <button class="toggle-btn" id="toggleKaufe" onclick="setMode('Kaufe')">KAUFE</button>
+            <button class="toggle-btn" id="toggleVerkaufe" onclick="setMode('Verkaufe')">VERKAUFE</button>
+        </div>
+        
+        <div style="position: relative;">
+            <textarea id="inputText" placeholder="..." oninput="handleInput()"></textarea>
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+        
+        <input type="text" id="priceInput" placeholder="PREIS (z.B. 100k, 1.5mio, 500000)...">
+        
+        <button class="format-btn" onclick="formatText()">FORMATIEREN</button>
+        
+        <h3>ERGEBNIS</h3>
+        <div class="output-container">
+            <textarea id="outputText" readonly placeholder=""></textarea>
+            <button class="copy-button" onclick="copyOutput()">KOPIEREN</button>
+        </div>
+        
+        <div class="badge">
+            <span>⚡</span> Liveinvader-Helper <span>⚡</span>
+        </div>
+    </div>
+
+    <script>
+        const illegalItems = ["Drogen", "Crack", "Kokain", "Heroin", "Meth", "Ecstasy", "LSD", "Schusswaffen", "Pistole", "Gewehr", "Munition", "Falschgeld", "Balaclava", "Dietriche", "USB mit Virus", "USB Stick mit Virus", "Illegale Waffen", "Schlagring", "Messer", "Taser", "Molotow", "Sprengstoff", "Silberbarren", "Goldbarren", "Gestohlene Waren", "Illegale Dokumente", "Gefälschte Ausweise", "Schmuggelware", "Waffenhandel", "Drogendealer", "Schwarzmarkt", "Hehlerware", "Korrupte Polizisten", "Gestohlene Autos", "Autohehlerei", "Geldwäsche"];
+        
+        const vehicleCorrections = {
+            "audi": "Obey",
+            "aston martin": "Ocelot",
+            "bentley": "Enus",
+            "bmw": "Ubermacht",
+            "bugatti": "Truffade",
+            "chevrolet": "Declasse",
+            "dodge": "Bravado",
+            "lamborghini": "Pegassi",
+            "land rover": "Gallivanter",
+            "lexus": "Emperor",
+            "mclaren": "Progen",
+            "volkswagen": "Burgerfahrzeug",
+            "cadillac": "Albany",
+            "ferrari": "Grotti",
+            "ford": "Vapid",
+            "honda": "Dinka",
+            "hyundai": "Bollokan",
+            "kia": "KMTA",
+            "nissan": "Annis",
+            "porsche": "Pfister",
+            "tesla": "Coil",
+            "volvo": "Vulcar",
+            "toyota": "Karin",
+            "mercedes": "Benefactor"
+        };
+
+        const vehicleList = [
+            "Ocelot XE SV Project 8", "Enus Continental GT", "Ubermacht X5", "Truffade Chiron", "Declasse Chevelle SS1970",
+            "Bravado Coronet 1967", "Lampadati Giulia GTA", "Ocelot Vantage V12", "Enus Cullinan", "Ubermacht 760",
+            "Declasse Camaro 1970", "Bravado Charger 1969", "Ocelot Vanquish Zagato SB", "Enus Bentayga", "Ubermacht X6-M",
+            "Declasse Corvette C7", "Bravado Viper 2008", "Ocelot Victor", "Enus Phantom", "Ubermacht X6-M 2021 Nr.X",
+            "Declasse Tahoe", "Bravado Ram 1500", "Ocelot F-Type R", "Enus Spectre Nr.1-10", "Ubermacht M5 E34",
+            "Declasse Camaro 2020", "Ocelot Eletre", "Ubermacht M3 E46", "Ubermacht M8", "Ubermacht I8",
+            "Ubermacht M3 CS", "Ubermacht M4 GTS", "Ubermacht M5 E60", "Ubermacht M5 CS", "Obey S8",
+            "Albany Escalade", "Grotti Italia F458", "Vapid Mustang Saleen 2000", "Dinka NSX 2017", "Bollokan Sonata 2022",
+            "Octavia RS", "Obey RS7", "Grotti Purosangue Nr.1-10", "Vapid Mustang Boss 302", "Dinka S2000",
+            "Obey RS6", "Grotti Tributo F8", "Vapid Mustang GT500", "Dinka Civic Type R", "Obey A8",
+            "Shelby GT500", "Dinka CBR", "Obey R8", "Dinka RT-300", "Obey Q8",
+            "Dinka Civic 2000", "Obey A6", "Obey Q60", "KMTA GT Line", "Pegassi Huayra BC",
+            "Gallivanter Velar", "Emperor RC-F", "Progen GT", "Burgerfahrzeug Jetta 1995", "Scooby Doo Car",
+            "Pegassi Performante LP640", "Gallivanter Defender", "Emperor LX-570", "Progen 675 LT", "Burgerfahrzeug Golf GTI Vision",
+            "Bravado Charger SRT", "Pegassi Gallardo", "Gallivanter Defender Halloween", "Emperor LFA", "Burgerfahrzeug Tiguan",
+            "Ubermacht M5 CS", "Benefactor AMG G63 (6X6)", "Ubermacht M4 G82", "Benefactor MG C63 Coupe", "Annis RX-7",
+            "Pfister 918 Spyder", "Coil Roadster", "Vulcar XC90", "Karin Eclipse GSX", "Burger Car",
+            "Benefactor MG GT Black Series", "Annis 350Z", "Pfister Taycan", "Coil Model S", "Karin Land Cruiser 200",
+            "Benefactor Benz Vito", "Annis GT-R I", "Pfister Panamera", "Coil Model X", "Karin Camry XSE",
+            "Benefactor MG S63", "Annis Skyline GT-R34", "Pfister 911 GT3 RS", "Coil Cybertruck", "Karin Mark 2",
+            "Benefactor MG G63", "Annis WRX 2004", "Pfister Neon", "Coil H9", "Karin Supra A80",
+            "Benefactor Benz 600SEL", "Annis Silvia S15", "Karin RAV4", "Benefactor Benz E420", "Annis RX-8",
+            "Benefactor MG C63", "Benefactor Maybach Pullman", "Benefactor MG GT", "Benefactor MG SL65", "Benefactor MG GT63 S",
+            "Benefactor MG VT", "Benefactor-MG VT S63"
+        ];
+
+        let mode = 'Suche';
+
+        window.onload = function() {
+            setTimeout(() => {
+                const loading = document.getElementById("loading");
+                loading.style.opacity = "0";
+                setTimeout(() => {
+                    loading.style.display = "none";
+                }, 500);
+            }, 1200);
+            
+            setMode('Suche');
+        };
+
+        function setMode(selectedMode) {
+            mode = selectedMode;
+            document.querySelectorAll(".toggle-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(`toggle${selectedMode}`).classList.add("active");
+
+            const priceInput = document.getElementById("priceInput");
+            if (selectedMode === 'Verkaufe' || selectedMode === 'Kaufe') {
+                priceInput.classList.add("visible");
+            } else {
+                priceInput.classList.remove("visible");
+            }
+        }
+
+        function formatPrice(price) {
+            if (!price) return '';
+            
+            price = price.replace(/[^0-9.,km]/gi, '');
+            
+            let numericValue = 0;
+            
+            if (price.toLowerCase().includes('mio')) {
+                numericValue = parseFloat(price.replace(/mio/gi, '').replace(',', '.')) * 1000000;
+            } else if (price.toLowerCase().includes('kk')) {
+                numericValue = parseFloat(price.replace(/kk/gi, '').replace(',', '.')) * 1000000;
+            } else if (price.toLowerCase().includes('k')) {
+                numericValue = parseFloat(price.replace(/k/gi, '').replace(',', '.')) * 1000;
+            } else {
+                numericValue = parseFloat(price.replace(/\./g, '').replace(',', '.'));
+            }
+            
+            if (isNaN(numericValue) || numericValue <= 0) {
+                return 'VHB';
+            }
+            
+            return numericValue.toLocaleString('de-DE', { 
+                style: 'currency', 
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).replace('€', '$') + ',-';
+        }
+
+        function correctVehicleName(text) {
+            let correctedText = text;
+            const words = text.split(' ');
+            
+            for (let i = 0; i < words.length; i++) {
+                const word = words[i].toLowerCase();
+                for (const [incorrectName, correctName] of Object.entries(vehicleCorrections)) {
+                    if (word === incorrectName || word === incorrectName.toLowerCase()) {
+                        words[i] = correctName;
+                        break;
+                    }
+                }
+            }
+            
+            return words.join(' ');
+        }
+
+        function handleInput() {
+            const inputElement = document.getElementById("inputText");
+            const currentPos = inputElement.selectionStart;
+            const correctedText = correctVehicleName(inputElement.value);
+            
+            if (correctedText !== inputElement.value) {
+                inputElement.value = correctedText;
+                inputElement.setSelectionRange(currentPos, currentPos);
+            }
+            
+            showSuggestions();
+        }
+
+        function showSuggestions() {
+            const input = document.getElementById("inputText").value;
+            const suggestionsDiv = document.getElementById("suggestions");
+            suggestionsDiv.innerHTML = "";
+
+            if (input.length > 1) {
+                const filteredSuggestions = vehicleList.filter(vehicle => 
+                    vehicle.toLowerCase().includes(input.toLowerCase())
+                ).slice(0, 8);
+
+                if (filteredSuggestions.length > 0) {
+                    filteredSuggestions.forEach(vehicle => {
+                        const suggestion = document.createElement("div");
+                        suggestion.textContent = vehicle;
+                        suggestion.onclick = () => {
+                            document.getElementById("inputText").value = vehicle;
+                            suggestionsDiv.innerHTML = "";
+                        };
+                        suggestionsDiv.appendChild(suggestion);
+                    });
+                }
+            }
+        }
+
+        function showPopup(message) {
+            const popup = document.getElementById("popup");
+            const popupMessage = document.getElementById("popup-message");
+            popupMessage.textContent = message;
+            popup.style.display = "block";
+            popup.style.animation = "fadeIn 0.2s ease-in-out forwards";
+        }
+
+        function closePopup() {
+            const popup = document.getElementById("popup");
+            popup.style.animation = "fadeOut 0.2s ease-in-out forwards";
+            setTimeout(() => {
+                popup.style.display = "none";
+            }, 180);
+        }
+
+        function formatText() {
+            const inputText = document.getElementById("inputText").value;
+            
+            for (let illegal of illegalItems) {
+                if (inputText.toLowerCase().includes(illegal.toLowerCase())) {
+                    showPopup("ILLEGALE WAREN GEFUNDEN!\nNicht veröffentlichen.");
+                    return;
+                }
+            }
+            
+            let text = inputText.trim();
+            let price = document.getElementById("priceInput").value.trim();
+            let vehicle = correctVehicleName(text);
+            
+            if (vehicle === '') {
+                showPopup("...");
+                return;
+            }
+            
+            let output = "";
+
+            if (mode === 'Verkaufe') {
+                output = `VERKAUFE: ${vehicle}`;
+                if (price) {
+                    output += ` | PREIS: ${formatPrice(price)}`;
+                } else {
+                    output += ` | PREIS: VHB`;
+                }
+                output += ` | PN bei Interesse`;
+            } 
+            else if (mode === 'Kaufe') {
+                output = `KAUFE: ${vehicle}`;
+                if (price) {
+                    output += ` | BUDGET: ${formatPrice(price)}`;
+                } else {
+                    output += ` | BUDGET: VHB`;
+                }
+                output += ` | PN`;
+            } 
+            else {
+                output = `SUCHE: ${vehicle} | PN`;
+            }
+
+            document.getElementById("outputText").value = output;
+            showPopup("Anzeige formatiert!");
+        }
+
+        function copyOutput() {
+            const outputText = document.getElementById("outputText");
+            if (outputText.value.trim() === '') {
+                showPopup("Kein Text zum Kopieren!");
+                return;
+            }
+            
+            outputText.select();
+            navigator.clipboard.writeText(outputText.value).then(() => {
+                showPopup("In Zwischenablage kopiert!");
+            }).catch(() => {
+                document.execCommand("copy");
+                showPopup("Kopiert!");
+            });
+        }
+
+        
+        document.addEventListener('click', function(event) {
+            const suggestions = document.getElementById('suggestions');
+            const input = document.getElementById('inputText');
+            if (suggestions && !input.contains(event.target) && !suggestions.contains(event.target)) {
+                suggestions.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -615,6 +615,12 @@
     </div>
 
     
+    <div class="popup" id="welcomePopup">
+        <p id="welcomeMessage"></p>
+        <button onclick="closeWelcomePopup()">OK</button>
+    </div>
+
+    
     <button class="feedback-btn" onclick="openFeedbackModal()">
         <span></span> Feedback
     </button>
@@ -738,9 +744,12 @@ Beschreibe dein Problem / Verbesserung / Bug ..." maxlength="1000"></textarea>
             "Benefactor MG VT", "Benefactor-MG VT S63"
         ];
 
-        const WEBHOOK_URL = 'https://ptb.discord.com/api/webhooks/1477791868992622644/hFPxDsXD1YFDF-Hji87t-Z9MC4-LbPgWtdxekxVV7IH3wsZhvisWyLN6ZU06lYGqSm0Z';
+        
+        const FEEDBACK_WEBHOOK_URL = 'https://ptb.discord.com/api/webhooks/1477791868992622644/hFPxDsXD1YFDF-Hji87t-Z9MC4-LbPgWtdxekxVV7IH3wsZhvisWyLN6ZU06lYGqSm0Z';
+        const LOG_WEBHOOK_URL = 'https://ptb.discord.com/api/webhooks/1478463579320488036/JiAJpjfJ4JiUU_3qNo4_L2W1rBdvlZ1qFlE-uZOHT_UrOCQU-bEMozEIPV90YoMtd3mZ';
 
         let mode = 'Suche';
+        let pageLoaded = false;
 
         window.onload = function() {
             setTimeout(() => {
@@ -748,11 +757,100 @@ Beschreibe dein Problem / Verbesserung / Bug ..." maxlength="1000"></textarea>
                 loading.style.opacity = "0";
                 setTimeout(() => {
                     loading.style.display = "none";
+                    
+                    
+                    if (!pageLoaded) {
+                        showWelcomePopup();
+                        pageLoaded = true;
+                    }
                 }, 500);
             }, 1200);
             
             setMode('Suche');
         };
+
+        function showWelcomePopup() {
+            const welcomePopup = document.getElementById('welcomePopup');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            welcomeMessage.textContent = '⚠️ WARNUNG ⚠️\n\nBeim Klicken auf OK wird eine Log-Nachricht gesendet, dass die Seite geladen wurde.\n\nDies dient nur zu Statistik-Zwecken.\n Folgendes Wird Geloggt: Zeitpunkt, Sprache, Plattform, Bildschirm-Größe(bsp.1920x1080), User Agent(bsp.Mozilla/5.0 (Windows NT 10.0; Win64; x64)...)';
+            welcomePopup.style.display = "block";
+            welcomePopup.style.animation = "fadeIn 0.2s ease-in-out forwards";
+        }
+
+        function closeWelcomePopup() {
+            const welcomePopup = document.getElementById('welcomePopup');
+            welcomePopup.style.animation = "fadeOut 0.2s ease-in-out forwards";
+            setTimeout(() => {
+                welcomePopup.style.display = "none";
+                
+                
+                sendLogWebhook();
+            }, 180);
+        }
+
+        async function sendLogWebhook() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            
+            const userAgent = navigator.userAgent;
+            const language = navigator.language;
+            const platform = navigator.platform;
+            const screenSize = `${window.screen.width}x${window.screen.height}`;
+            
+            
+            const embed = {
+                title: '📊 LiveInvader Helper - Seitenaufruf',
+                description: `Die Seite wurde geladen und ein Benutzer hat den Log bestätigt.`,
+                color: 0x6d2e2e,
+                fields: [
+                    {
+                        name: '🕒 Zeitpunkt',
+                        value: dateStr,
+                        inline: true
+                    },
+                    {
+                        name: '🌐 Sprache',
+                        value: language,
+                        inline: true
+                    },
+                    {
+                        name: '💻 Plattform',
+                        value: platform,
+                        inline: true
+                    },
+                    {
+                        name: '📱 Bildschirm',
+                        value: screenSize,
+                        inline: true
+                    },
+                    {
+                        name: '🔍 User Agent',
+                        value: userAgent.substring(0, 100) + (userAgent.length > 100 ? '...' : ''),
+                        inline: false
+                    }
+                ],
+                timestamp: new Date().toISOString(),
+                footer: {
+                    text: `LiveInvader Helper • Log-Eintrag`
+                }
+            };
+
+            try {
+                await fetch(LOG_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        embeds: [embed]
+                    })
+                });
+                
+            } catch (error) {
+                console.error('Error sending log webhook:', error);
+            }
+        }
 
         function setMode(selectedMode) {
             mode = selectedMode;
@@ -1009,7 +1107,7 @@ Beschreibe dein Problem / Verbesserung / Bug ..." maxlength="1000"></textarea>
             };
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
+                const response = await fetch(FEEDBACK_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
